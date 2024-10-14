@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qilin.mapper.SeckillVoucherMapper">
+  <resultMap id="BaseResultMap" type="com.qilin.entities.SeckillVoucher">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="voucher_id" jdbcType="BIGINT" property="voucherId" />
+    <result column="stock" jdbcType="INTEGER" property="stock" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="begin_time" jdbcType="TIMESTAMP" property="beginTime" />
+    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+    <update id="decreaseStock" parameterType="hashmap">
+      update tb_seckill_voucher
+      set stock = stock - 1
+      where voucher_id = #{voucherId} and stock > 0
+    </update>
+</mapper>

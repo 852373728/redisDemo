@@ -5,5 +5,27 @@ spring:
       port: 6379
       lettuce:
         pool:
-          max-wait: 1000ms
+          max-wait: 10000ms
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    username: root
+    password: 123456
+    url: jdbc:mysql://localhost:3306/hmdp?characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      connection-test-query: SELECT 1
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
 
+logging:
+  level:
+    com.qilin.mapper.*: info
+
+
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.qilin.entities
+  configuration:
+    map-underscore-to-camel-case: true
