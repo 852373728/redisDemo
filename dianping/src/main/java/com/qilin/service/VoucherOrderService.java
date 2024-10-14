@@ -7,9 +7,11 @@ import com.qilin.entities.VoucherOrder;
 import com.qilin.mapper.SeckillVoucherMapper;
 import com.qilin.mapper.VoucherMapper;
 import com.qilin.mapper.VoucherOrderMapper;
+import com.qilin.utils.RedisDistributedLock;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
@@ -39,6 +41,9 @@ public class VoucherOrderService {
     @Resource
     private ApplicationContext applicationContext;
 
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
+
 
 
 
@@ -59,9 +64,22 @@ public class VoucherOrderService {
 
 
         VoucherOrderService voucherOrderServiceBean = applicationContext.getBean(VoucherOrderService.class);
-        synchronized (userId.toString().intern()) {
-            return voucherOrderServiceBean.validAndInsert(voucherId, userId);
+        //单体应用下的锁，利用jvm的synchronized
+//        synchronized (userId.toString().intern()) {
+//            return voucherOrderServiceBean.validAndInsert(voucherId, userId);
+//        }
+        //分布式锁
+        RedisDistributedLock redisDistributedLock = new RedisDistributedLock(stringRedisTemplate);
+        boolean b = redisDistributedLock.tryLock(userId.toString(), 1200);
+        if (!b){
+            return Result.fail("获取锁失败");
         }
+        try {
+            return voucherOrderServiceBean.validAndInsert(voucherId, userId);
+        }finally {
+            redisDistributedLock.unlock(userId.toString());
+        }
+
     }
 
     @Transactional(rollbackFor = Exception.class)
