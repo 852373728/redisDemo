@@ -19,6 +19,7 @@ public class RedisDistributedLock {
     private StringRedisTemplate stringRedisTemplate;
 
     private static final String LOCK_PREFIX = "distributedLock:";
+    private final String LOCK_KEY;
     private static final String JVM_ID = UUID.randomUUID().toString(true);
     private static final  DefaultRedisScript<Long> defaultRedisScript = new DefaultRedisScript<>();
     static {
@@ -27,23 +28,24 @@ public class RedisDistributedLock {
     }
 
 
-    public RedisDistributedLock(StringRedisTemplate stringRedisTemplate) {
+    public RedisDistributedLock(String key,StringRedisTemplate stringRedisTemplate) {
+        LOCK_KEY = LOCK_PREFIX+key;
         this.stringRedisTemplate = stringRedisTemplate;
     }
 
-    public boolean tryLock(String key, long expire) {
+    public boolean tryLock(long expire) {
         long threadId = Thread.currentThread().threadId();
 
         log.info("{}{}", JVM_ID, threadId);
-        Boolean result = stringRedisTemplate.opsForValue().setIfAbsent(LOCK_PREFIX + key, JVM_ID+threadId, expire, TimeUnit.SECONDS);
+        Boolean result = stringRedisTemplate.opsForValue().setIfAbsent(LOCK_KEY, JVM_ID+threadId, expire, TimeUnit.SECONDS);
         return BooleanUtil.isTrue(result);
     }
 
 
 
-    public void unlock(String key) {
+    public void unlock() {
         long threadId = Thread.currentThread().threadId();
         log.info("{}{}", JVM_ID, threadId);
-        stringRedisTemplate.execute(defaultRedisScript, Collections.singletonList(LOCK_PREFIX + key),JVM_ID+threadId);
+        stringRedisTemplate.execute(defaultRedisScript, Collections.singletonList(LOCK_KEY),JVM_ID+threadId);
     }
 }

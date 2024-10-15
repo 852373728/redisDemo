@@ -69,15 +69,15 @@ public class VoucherOrderService {
 //            return voucherOrderServiceBean.validAndInsert(voucherId, userId);
 //        }
         //分布式锁
-        RedisDistributedLock redisDistributedLock = new RedisDistributedLock(stringRedisTemplate);
-        boolean b = redisDistributedLock.tryLock(userId.toString(), 1200);
+        RedisDistributedLock redisDistributedLock = new RedisDistributedLock(userId.toString(),stringRedisTemplate);
+        boolean b = redisDistributedLock.tryLock(1200);
         if (!b){
             return Result.fail("获取锁失败");
         }
         try {
             return voucherOrderServiceBean.validAndInsert(voucherId, userId);
         }finally {
-            redisDistributedLock.unlock(userId.toString());
+            redisDistributedLock.unlock();
         }
 
     }
