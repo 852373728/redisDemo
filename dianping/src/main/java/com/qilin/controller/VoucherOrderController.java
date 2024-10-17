@@ -4,10 +4,7 @@ package com.qilin.controller;
 import com.qilin.dto.Result;
 import com.qilin.service.VoucherOrderService;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
@@ -24,8 +21,15 @@ public class VoucherOrderController {
     @Resource
     private VoucherOrderService voucherOrderService;
     @PostMapping("/seckill/{id}")
-    public Result seckillVoucher(@PathVariable("id") Long voucherId) {
-        Result voucherOrder = voucherOrderService.createVoucherOrder(voucherId,1122l);
+    public Result seckillVoucher(@PathVariable("id") Long voucherId, @RequestParam("userId") Long userId) {
+        Result voucherOrder = voucherOrderService.createVoucherOrder(voucherId,userId);
+        return voucherOrder;
+    }
+
+
+    @PostMapping("/asyncSeckillVoucher/{id}")
+    public Result asyncSeckillVoucher(@PathVariable("id") Long voucherId, @RequestParam("userId") Long userId) {
+        Result voucherOrder = voucherOrderService.asyncCreateVoucherOrder(voucherId,userId);
         return voucherOrder;
     }
 }

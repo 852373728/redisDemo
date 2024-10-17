@@ -1,9 +1,13 @@
 package com.qilin;
 
+import cn.hutool.core.util.BooleanUtil;
 import com.qilin.service.IdGenerate;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.connection.stream.ReadOffset;
+import org.springframework.data.redis.connection.stream.StreamInfo;
+import org.springframework.data.redis.core.StreamOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.math.BigInteger;
@@ -23,17 +27,13 @@ public class Test1 {
     private StringRedisTemplate stringRedisTemplate;
 
 
-
-    ExecutorService executorService = Executors.newFixedThreadPool(500);
     @Test
     public void test1() throws InterruptedException {
 
-        BigInteger order = idGenerate.getGloballyUniqueId("order");
-        long l = order.longValue();
-        System.out.println(l);
+
+
 
     }
-
 
 
 }

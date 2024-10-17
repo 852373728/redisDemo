@@ -20,7 +20,7 @@ spring:
 
 logging:
   level:
-    com.qilin.mapper.*: info
+    com.qilin.mapper.*: debug
 
 
 
